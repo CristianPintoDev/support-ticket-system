@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.users.router import router as users_router
 from app.auth.router import router as auth_router
+from app.core.database import engine, Base
+
 
 app = FastAPI(
     title="Support Ticket System",
@@ -11,10 +13,9 @@ app = FastAPI(
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/users", tags=["Users"])
 
+def initdb():
+    Base.metadata.create_all(bind=engine)
 
-@app.get("/")
-def root():
-    return {
-        "status": "ok",
-        "message": "Support Ticket System API (in development)"
-    }
+if __name__ == "__main__":
+    initdb()
+
