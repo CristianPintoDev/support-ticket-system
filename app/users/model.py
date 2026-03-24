@@ -13,3 +13,4 @@ class User(Base):
     name = Column(String(50), unique=True, nullable=False)
 
     role = relationship("Role")
+    tickets = relationship("Ticket", back_populates="creator")

@@ -49,10 +49,11 @@ La API se desplegara en Render una vez finalizada (u otra plataforma a definir a
 
 ---
 
-## 👤 Autor
+## 👨‍💻 Author
 
-**Cristian Pinto**  
-Analista y programador computacional  
+Cristian Pinto
 
-- 💼 LinkedIn: https://www.linkedin.com/in/cristian-pinto/  
-- 🐙 GitHub: https://github.com/CristianPintoDev
+
+## License
+
+This project is licensed under the MIT License.

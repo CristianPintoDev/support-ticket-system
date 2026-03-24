@@ -21,13 +21,6 @@ class Ticket(Base):
     assignments = relationship("TicketAssignmentHistory", back_populates="ticket")
 
 
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    name = Column(String, nullable=False)
-
-    tickets = relationship("Ticket", back_populates="creator")
 
 class TicketStatus(Base):
     __tablename__ = "ticket_status"
