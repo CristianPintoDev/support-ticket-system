@@ -9,7 +9,6 @@ class TicketBase(BaseModel):
 
 
 class TicketCreate(TicketBase):
-    create_by: str
     status_id: str
 
 
@@ -36,7 +35,7 @@ class TicketAssignmentCreate(BaseModel):
     ticket_id: str
     assigned_to: str
 
-class UpdateTicketStatus(TicketBase):
+class UpdateTicketStatus(BaseModel):
     status_id: str
 
     class Config:
@@ -48,3 +47,6 @@ class TicketUpdate(TicketBase):
 
     class Config:
         from_attributes = True
+
+class AssignTicket(BaseModel):
+    assigned_to: str

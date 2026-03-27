@@ -1,18 +1,15 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from uuid import UUID
-from app.ticket.model import Ticket
+from app.ticket.model import Ticket, TicketAssignmentHistory
+from app.users.model import User
 from app.ticket.schema import TicketUpdate
 
-
-def create_ticket(db, ticket_data):
-    from app.ticket.model import Ticket
-    from datetime import datetime, timezone
-
+def create_ticket(db, ticket_data, user_id :str):
     ticket = Ticket(
         title=ticket_data.title,
         description=ticket_data.description,
-        create_by=ticket_data.create_by,
+        create_by=user_id,
         status_id=ticket_data.status_id,
         create_at=datetime.now(timezone.utc)
     )
@@ -22,8 +19,28 @@ def create_ticket(db, ticket_data):
     return ticket
 
 
+def get_tickets(db: Session):
+    return db.query(Ticket).all()
+
+def get_ticket(db: Session, ticket_id: str):
+    return db.query(Ticket).filter(Ticket.id == ticket_id).first()
+
+
+def update_ticket_status(db: Session, ticket_id: str, data):
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+
+    if not ticket:
+        return None
+
+    ticket.status_id = data.status_id
+
+    db.commit()
+    db.refresh(ticket)
+
+    return ticket
+
 def update_ticket(db: Session, ticket_id: UUID, data: TicketUpdate):
-    ticket = get_ticket_by_id(db, ticket_id)
+    ticket = get_ticket(db, ticket_id)
     if not ticket:
         return None
 
@@ -54,4 +71,30 @@ def close_ticket(db: Session, ticket_id: UUID, closed_status_id: str):
 
     db.commit()
     db.refresh(ticket)
+    return ticket
+
+
+def assign_ticket(db: Session, ticket_id: str, assigned_to: str):
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+
+    if not ticket:
+        return None
+
+    user = db.query(User).filter(User.id == assigned_to).first()
+
+    if not user:
+        return None
+
+    if user.role.name != "support":
+        raise ValueError("El usuario no es soporte")
+
+    assignment = TicketAssignmentHistory(
+        ticket_id=ticket_id,
+        assigned_to=assigned_to
+    )
+
+    db.add(assignment)
+    db.commit()
+    db.refresh(assignment)
+
     return ticket
